@@ -10,12 +10,9 @@ namespace LuckSmile.EditorMapHexs
     public class EarthHex
     {
         public Data ThisData { get; private set; }
-        public EarthHex(Data data)
+        public EarthHex(Data data, GUIStyle style)
         {
             this.ThisData = data;
-            GUIStyle style = new GUIStyle();
-            style.normal.background = (ThisData.Type == Types.Pointer ? EditorGUIUtility.Load("Assets/None.png") : EditorGUIUtility.Load("Assets/Full.png")) as Texture2D;
-            style.border = new RectOffset(4, 4, 4, 4);
             ThisData.Set(data.Type, style);
         }
         public void Draw()
@@ -26,22 +23,6 @@ namespace LuckSmile.EditorMapHexs
         {
             this.ThisData.RectPosition.position += delta;
         }
-        public void ChangeState()
-        {
-            if(ThisData.Type == Types.Pointer)
-            {
-                GUIStyle style = new GUIStyle();
-                style.normal.background = EditorGUIUtility.Load("Assets/Full.png") as Texture2D;
-                style.border = new RectOffset(4, 4, 4, 4);
-                ThisData.Set(Types.Base, style);
-                ThisData.parent.ThisData.childs.Add(this);
-                this.ThisData.OnEvent.OnRemoveNoneHexs?.Invoke();
-            }
-            else
-            {
-                ThisData.OnEvent.OnReproduction?.Invoke();
-            }
-        }
         public bool ProcessEvents(Event e)
         {
             switch(e.type)
@@ -49,7 +30,7 @@ namespace LuckSmile.EditorMapHexs
                 case EventType.MouseDown:
                     if (e.button == 0)
                     {
-                        ChangeState();
+                        ThisData.OnEvent.OnChangeState?.Invoke(this);
                         GUI.changed = true;
                     }
                     else if (e.button == 1 && this.ThisData.parent != null)
@@ -88,12 +69,12 @@ namespace LuckSmile.EditorMapHexs
             public Action<EarthHex> OnEdit { get; private set; }
             public Action OnRemove { get; private set; }
             public Action OnRemoveNoneHexs { get; private set; }
-            public Action OnReproduction { get; private set; }
-            public OnEvents(Action<EarthHex> OnEdit, Action OnRemove, Action OnReproduction, Action OnRemoveNoneHexs)
+            public Action<EarthHex> OnChangeState { get; private set; }
+            public OnEvents(Action<EarthHex> OnEdit, Action OnRemove, Action<EarthHex> OnChangeState, Action OnRemoveNoneHexs)
             {
                 this.OnEdit = OnEdit;
                 this.OnRemove = OnRemove;
-                this.OnReproduction = OnReproduction;
+                this.OnChangeState = OnChangeState;
                 this.OnRemoveNoneHexs = OnRemoveNoneHexs;
             }
         }
