@@ -10,11 +10,14 @@ namespace LuckSmile.EditorMapHexs
     public class DataMapHexs
     {
         public EarthHex[] Hexs => hexs.Values.ToArray();
-        private readonly Dictionary<Vector2, EarthHex> hexs;
-        private readonly Vector2 sizeCell;
-        private readonly TypesHex type;
-        public DataMapHexs(TypesHex type, Vector2 sizeWindow, Vector2 sizeCell)
+        private readonly ParametersEarthHex parametersEarthHex = null;
+        private readonly Dictionary<Vector2, EarthHex> hexs = null;
+        private readonly Vector2 sizeCell = Vector2.zero;
+        private readonly TypesHex type = TypesHex.SharpTop;
+        public DataMapHexs(TypesHex type, ParametersEarthHex parametersEarthHex, Vector2 sizeWindow, Vector2 sizeCell)
         {
+            this.parametersEarthHex = parametersEarthHex;
+
             this.type = type;
             this.sizeCell = sizeCell;
             this.hexs = new Dictionary<Vector2, EarthHex>();
@@ -25,9 +28,13 @@ namespace LuckSmile.EditorMapHexs
         }
         private EarthHex CreateHex(Vector2 index, EarthHex.Types type)
         {
-            EarthHex hex = new EarthHex(new EarthHex.Data(index, type));
+            GUIStyle style = new GUIStyle();
+            style.normal.background = type == EarthHex.Types.Pointer ? parametersEarthHex.TextureHexPointer : parametersEarthHex.TextureHexBase;
+            style.border = new RectOffset(4, 4, 4, 4);
+
+            EarthHex hex = new EarthHex(new EarthHex.Data(index, type), style);
             hex.ThisData.RectPosition = new Rect(Vector2.zero, sizeCell);
-            hex.ThisData.OnEvent = new EarthHex.OnEvents(null, () => RemoveHex(index), () => ReproductionPointers(hex), ClearPointers);
+            hex.ThisData.OnEvent = new EarthHex.OnEvents(null, () => RemoveHex(index), ChangeState, ClearPointers);
             return hex;
         }
         private EarthHex CreatePointer(Vector2 index, Vector2 direction, EarthHex parent)
@@ -42,6 +49,23 @@ namespace LuckSmile.EditorMapHexs
             hex.ThisData.RectPosition = new Rect(position, sizeCell);
             hex.ThisData.parent = parent;
             return hex;
+        }
+        public void ChangeState(EarthHex hex)
+        {
+            if (hex.ThisData.Type == EarthHex.Types.Pointer)
+            {
+                GUIStyle style = new GUIStyle();
+                style.normal.background = parametersEarthHex.TextureHexBase;
+                style.border = new RectOffset(4, 4, 4, 4);
+
+                hex.ThisData.Set(EarthHex.Types.Base, style);
+                hex.ThisData.parent.ThisData.childs.Add(hex);
+                hex.ThisData.OnEvent.OnRemoveNoneHexs?.Invoke();
+            }
+            else
+            {
+                ReproductionPointers(hex);
+            }
         }
         public void RemoveHex(Vector2 index)
         {
