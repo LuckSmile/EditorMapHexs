@@ -3,21 +3,29 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using LuckSmile.EditorMapHexs;
-public class MapHexEditor : EditorWindow
+public class MapHexsEditor : EditorWindow
 {
     //private SystemInteractionsCells interactionsCells;
+    private ParametersEarthHex parametersEarthHex;
     private DataMapHexs map;
     private Vector2 pointPostition = Vector2.zero;
     private Vector2 drag = Vector2.zero;
     [MenuItem("Tools/Map")] public static void Init()
     {
-        MapHexEditor window = GetWindow<MapHexEditor>();
+        MapHexsEditor window = GetWindow<MapHexsEditor>();
         window.maxSize = new Vector2(600, 600);
         window.minSize = new Vector2(600, 600);
         window.Show();
     }
     private void OnEnable()
     {
+        this.parametersEarthHex = Resources.Load<ParametersEarthHex>("Assets/EditorMapHexs/Settings/ParametersEarthHex");
+        if(this.parametersEarthHex == null)
+        {
+            this.parametersEarthHex = ScriptableObject.CreateInstance<ParametersEarthHex>();
+            AssetDatabase.CreateAsset(this.parametersEarthHex, "Assets/EditorMapHexs/Settings/ParametersEarthHex.asset");
+            AssetDatabase.SaveAssets();
+        }
         this.map = new DataMapHexs(DataMapHexs.TypesHex.SharpTop, new Vector2(600, 600), new Vector2(80, 80));
     }
     private void OnGUI()
