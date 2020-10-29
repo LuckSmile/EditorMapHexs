@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ParametersEarthHex : ScriptableObject
 {
-    [SerializeField] private Texture2D hexBase;
-    [SerializeField] private Texture2D hexPointer;
+    public Texture2D TextureHexBase => textureHexBase;
+    [SerializeField] private Texture2D textureHexBase = null;
+    public Texture2D TextureHexPointer => textureHexPointer;
+    [SerializeField] private Texture2D textureHexPointer = null;
 }
