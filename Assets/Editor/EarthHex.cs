@@ -14,7 +14,7 @@ namespace LuckSmile.Map
         {
             this.ThisData = data;
             GUIStyle style = new GUIStyle();
-            style.normal.background = (ThisData.Type == Types.None ? EditorGUIUtility.Load("Assets/None.png") : EditorGUIUtility.Load("Assets/Full.png")) as Texture2D;
+            style.normal.background = (ThisData.Type == Types.Pointer ? EditorGUIUtility.Load("Assets/None.png") : EditorGUIUtility.Load("Assets/Full.png")) as Texture2D;
             style.border = new RectOffset(4, 4, 4, 4);
             ThisData.Set(data.Type, style);
         }
@@ -26,14 +26,14 @@ namespace LuckSmile.Map
         {
             this.ThisData.RectPosition.position += delta;
         }
-        public void OnAction()
+        public void ChangeState()
         {
-            if(ThisData.Type == Types.None)
+            if(ThisData.Type == Types.Pointer)
             {
                 GUIStyle style = new GUIStyle();
                 style.normal.background = EditorGUIUtility.Load("Assets/Full.png") as Texture2D;
                 style.border = new RectOffset(4, 4, 4, 4);
-                ThisData.Set(Types.Full, style);
+                ThisData.Set(Types.Base, style);
                 ThisData.parent.ThisData.childs.Add(this);
                 this.ThisData.OnEvent.OnRemoveNoneHexs?.Invoke();
             }
@@ -47,12 +47,12 @@ namespace LuckSmile.Map
             switch(e.type)
             {
                 case EventType.MouseDown:
-                    if(e.button == 0)
+                    if (e.button == 0)
                     {
-                        OnAction();
+                        ChangeState();
                         GUI.changed = true;
                     }
-                    else if(e.button == 1)
+                    else if (e.button == 1 && this.ThisData.parent != null)
                     {
                         this.ThisData.OnEvent.OnRemove();
                         GUI.changed = true;
@@ -99,8 +99,8 @@ namespace LuckSmile.Map
         }
         public enum Types
         {
-            None,
-            Full
+            Pointer,
+            Base
         }
     }
 }

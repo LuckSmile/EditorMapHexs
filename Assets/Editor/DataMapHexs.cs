@@ -12,39 +12,31 @@ namespace LuckSmile.Map
     {
         public EarthHex[] Hexs => hexs.Values.ToArray();
         private readonly Dictionary<Vector2, EarthHex> hexs;
-        private readonly Vector2 sizeWindow;
         private readonly Vector2 sizeCell;
         private readonly TypesHex type;
         public DataMapHexs(TypesHex type, Vector2 sizeWindow, Vector2 sizeCell)
         {
             this.type = type;
-            this.sizeWindow = sizeWindow;
             this.sizeCell = sizeCell;
             this.hexs = new Dictionary<Vector2, EarthHex>();
 
-            EarthHex hex = CreateHex(Vector2.zero, EarthHex.Types.Full);
+            EarthHex hex = CreateHex(Vector2.zero, EarthHex.Types.Base);
             hex.ThisData.RectPosition.position = (sizeWindow - sizeCell) / 2f;
-
-            //ReproductionHex(hex);
+            hexs.Add(hex.ThisData.Index, hex);
         }
         private EarthHex CreateHex(Vector2 index, EarthHex.Types type)
         {
-            if (hexs.Keys.Contains(index) == false)
-            {
-                EarthHex hex = new EarthHex(new EarthHex.Data(index, type));
-                hex.ThisData.RectPosition = new Rect(Vector2.zero, sizeCell);
-                hex.ThisData.OnEvent = new EarthHex.OnEvents(null, () => RemoveHex(index), () => ReproductionHex(hex), RemoveNoneHexs);
-                hexs.Add(hex.ThisData.Index, hex);
-                return hex;
-            }
-            return null;
+            EarthHex hex = new EarthHex(new EarthHex.Data(index, type));
+            hex.ThisData.RectPosition = new Rect(Vector2.zero, sizeCell);
+            hex.ThisData.OnEvent = new EarthHex.OnEvents(null, () => RemoveHex(index), () => ReproductionPointers(hex), ClearPointers);
+            return hex;
         }
-        private EarthHex CreateHexSharpTop(Vector2 index, Vector2 direction, EarthHex parent)
+        private EarthHex CreatePointer(Vector2 index, Vector2 direction, EarthHex parent)
         {
-            EarthHex hex = CreateHex(index, EarthHex.Types.None);
-            
-            if (hex == null)
+            if (hexs.Keys.Contains(index) == true)
                 return null;
+            
+            EarthHex hex = CreateHex(index, EarthHex.Types.Pointer);
 
             Vector2 position = parent == null ? Vector2.zero : parent.ThisData.RectPosition.position;
             position += direction * sizeCell;
@@ -54,7 +46,7 @@ namespace LuckSmile.Map
         }
         public void RemoveHex(Vector2 index)
         {
-            RemoveNoneHexs();
+            ClearPointers();
             void Remove(EarthHex hex)
             {
                 hexs.Remove(hex.ThisData.Index);
@@ -67,21 +59,21 @@ namespace LuckSmile.Map
             hexs[index].ThisData.parent.ThisData.childs.Remove(hexs[index]);
             Remove(hexs[index]);
         }
-        public void RemoveNoneHexs()
+        public void ClearPointers()
         {
             EarthHex[] hexs = this.hexs.Values.ToArray();
             for (int index = 0; index < hexs.Length; index++)
             {
                 EarthHex h = hexs[index];
-                if (h.ThisData.Type == EarthHex.Types.None)
+                if (h.ThisData.Type == EarthHex.Types.Pointer)
                 {
                     this.hexs.Remove(h.ThisData.Index);
                 }
             }
         }
-        public void ReproductionHex(EarthHex hex)
+        public void ReproductionPointers(EarthHex hex)
         {
-            RemoveNoneHexs();
+            ClearPointers();
 
             int[] direction = new int[] { 1, 0, -1 };
             Dictionary<Vector2, Vector2> directionPoint = new Dictionary<Vector2, Vector2>
@@ -105,7 +97,11 @@ namespace LuckSmile.Map
                     {
                         Vector2 index = new Vector2(direction[x], direction[y]);
                         index.y *= index.x == 0 ? 2 : 1;
-                        this.CreateHexSharpTop(hex.ThisData.Index - index, directionPoint[new Vector2(direction[x], direction[y])], hex);
+                        EarthHex pointer = this.CreatePointer(hex.ThisData.Index - index, directionPoint[new Vector2(direction[x], direction[y])], hex);
+                        if(pointer != null)
+                        {
+                            hexs.Add(pointer.ThisData.Index, pointer);
+                        }
                     }
                 }
             }
