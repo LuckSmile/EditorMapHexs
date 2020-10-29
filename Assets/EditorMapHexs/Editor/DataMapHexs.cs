@@ -1,12 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System;
 using System.Linq;
 using UnityEditor;
-using JetBrains.Annotations;
+using UnityEngine;
 
-namespace LuckSmile.Map
+namespace LuckSmile.EditorMapHexs
 {
     public class DataMapHexs
     {

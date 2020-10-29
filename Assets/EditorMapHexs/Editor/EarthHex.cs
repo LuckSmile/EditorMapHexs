@@ -5,7 +5,7 @@ using UnityEngine;
 using System;
 using UnityEditor;
 
-namespace LuckSmile.Map
+namespace LuckSmile.EditorMapHexs
 {
     public class EarthHex
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using LuckSmile.Map;
+using LuckSmile.EditorMapHexs;
 public class MapHexEditor : EditorWindow
 {
     //private SystemInteractionsCells interactionsCells;
