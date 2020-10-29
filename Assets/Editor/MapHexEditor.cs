@@ -22,12 +22,28 @@ public class MapHexEditor : EditorWindow
     }
     private void OnGUI()
     {
+        DrawConnections();
         Draw();
 
         ProccesEarthHexEvents(Event.current);
         ProcessEvents(Event.current);
 
         if (GUI.changed) Repaint();
+    }
+    private void DrawConnections()
+    {
+        for(int index = 0; index < map.Hexs.Length; index++)
+        {
+            EarthHex hex = map.Hexs[index];
+            Vector2 start = hex.ThisData.RectPosition.center;
+            for (int indexChild = 0; indexChild < hex.ThisData.childs.Count; indexChild++)
+            {
+                EarthHex child = hex.ThisData.childs[indexChild];
+                Vector2 end = child.ThisData.RectPosition.center;
+                Vector2 center = (start + end) / 2;
+                Handles.DrawBezier(start, end, center, center, Color.white, null, 4f);
+            }
+        }
     }
     private void Draw()
     {

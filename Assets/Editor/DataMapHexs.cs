@@ -64,6 +64,7 @@ namespace LuckSmile.Map
                     Remove(childs[indexChild]);
                 }
             }
+            hexs[index].ThisData.parent.ThisData.childs.Remove(hexs[index]);
             Remove(hexs[index]);
         }
         public void RemoveNoneHexs()
