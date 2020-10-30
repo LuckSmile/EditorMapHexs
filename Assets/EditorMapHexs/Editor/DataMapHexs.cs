@@ -134,6 +134,5 @@ namespace LuckSmile.EditorMapHexs
             SharpTop,
             BluntTop
         }
-
     }
 }
