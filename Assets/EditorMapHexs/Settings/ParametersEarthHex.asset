@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e3fcb02746a0584b9425dbcdb2ca40a, type: 3}
   m_Name: ParametersEarthHex
   m_EditorClassIdentifier: 
-  textureHexBase: {fileID: 0}
-  textureHexPointer: {fileID: 0}
+  textureHexBase: {fileID: 2800000, guid: 2ddfd800639ad5243aa35c1b598909e6, type: 3}
+  textureHexPointer: {fileID: 2800000, guid: 38b3a7c7c318f884fbf21a719454c2da, type: 3}
