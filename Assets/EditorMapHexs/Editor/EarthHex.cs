@@ -23,6 +23,12 @@ namespace LuckSmile.EditorMapHexs
         {
             this.ThisData.RectPosition.position += delta;
         }
+        private void ProcessContextMenu()
+        {
+            GenericMenu genericMenu = new GenericMenu();
+            genericMenu.AddItem(new GUIContent("Удалить"), false, () => ThisData.OnEvent.OnRemove());
+            genericMenu.ShowAsContext();
+        }
         public bool ProcessEvents(Event e)
         {
             switch(e.type)
@@ -33,10 +39,13 @@ namespace LuckSmile.EditorMapHexs
                         ThisData.OnEvent.OnChangeState?.Invoke(this);
                         GUI.changed = true;
                     }
-                    else if (e.button == 1 && this.ThisData.parent != null)
+                    if(this.ThisData.Type == Types.Base)
                     {
-                        this.ThisData.OnEvent.OnRemove();
-                        GUI.changed = true;
+                        if (e.button == 1 && this.ThisData.parent != null)
+                        {
+                            this.ProcessContextMenu();
+                            GUI.changed = true;
+                        }
                     }
                     break;
             }
