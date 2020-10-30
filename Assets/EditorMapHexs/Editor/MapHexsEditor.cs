@@ -45,13 +45,13 @@ public class MapHexsEditor : EditorWindow
         for(int index = 0; index < map.Hexs.Length; index++)
         {
             EarthHex hex = map.Hexs[index];
-            Vector2 start = hex.ThisData.RectPosition.center;
+            Vector2 start = hex.ThisData.RectPosition.center + new Vector2(0f, 5f);
             for (int indexChild = 0; indexChild < hex.ThisData.childs.Count; indexChild++)
             {
                 EarthHex child = hex.ThisData.childs[indexChild];
-                Vector2 end = child.ThisData.RectPosition.center;
+                Vector2 end = child.ThisData.RectPosition.center + new Vector2(0f, 5f);
                 Vector2 center = (start + end) / 2;
-                Handles.DrawBezier(start, end, center, center, Color.white, null, 4f);
+                Handles.DrawBezier(start, end, center, center, this.parametersEarthHex.ColorArrow, null, 4f);
             }
         }
     }
@@ -92,7 +92,7 @@ public class MapHexsEditor : EditorWindow
                 break;
         }
     }
-    public void OnDrag(Vector2 delta)
+    private void OnDrag(Vector2 delta)
     {
         drag = delta;
         pointPostition += drag;
