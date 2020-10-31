@@ -4,44 +4,84 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEditor;
+using System.Security.Policy;
 
 namespace LuckSmile.EditorMapHexs
 {
     public class EarthHex
     {
-        public Data ThisData { get; private set; }
-        public EarthHex(Data data, GUIStyle style)
+        private readonly DataMapHexs mapHexs;
+        private readonly List<EarthHex> childs = null;
+        public DataEarthHex Data { get; private set; }
+        public EarthHex[] Childs { get => childs.ToArray(); }
+        public EarthHex parent;
+        public Types Type { get; private set; }
+        public OnEvents OnEvent { get; private set; }
+        private GUIStyle style;
+        public Rect RectPosition;
+
+        public EarthHex(DataEarthHex data, Types type, OnEvents onEvent, DataMapHexs mapHexs, GUIStyle style)
         {
-            this.ThisData = data;
-            ThisData.Set(data.Type, style);
+            this.mapHexs = mapHexs;
+            this.Data = data;
+            this.Type = type;
+            this.OnEvent = onEvent;
+            this.style = style;
+            this.childs = new List<EarthHex>();
+        }
+        public void AddChild(EarthHex hex)
+        {
+            Data.Childs.Add(hex.Data);
+            childs.Add(hex);
+        }
+        public void RemoveChild(EarthHex hex)
+        {
+            Data.Childs.Remove(hex.Data);
+            childs.Remove(hex);
         }
         public void Draw()
         {
-            GUI.Box(ThisData.RectPosition, $"x: {ThisData.Index.x} / y: {ThisData.Index.y}" + $"\nx:{ThisData.RectPosition.x}/y:{ThisData.RectPosition.y}", ThisData.Style);
+            GUI.Box(RectPosition, $"x: {Data.Index.x} / y: {Data.Index.y}" + $"\nx:{RectPosition.x}/y:{RectPosition.y}", style);
         }
         public void Drag(Vector2 delta)
         {
-            this.ThisData.RectPosition.position += delta;
+            this.RectPosition.position += delta;
+        }
+        public void ChangeState()
+        {
+            if (this.Type == EarthHex.Types.Pointer)
+            {
+                this.style.normal.background = mapHexs.parametersEarthHex.TextureHexBase;
+                this.style.border = new RectOffset(4, 4, 4, 4);
+
+                this.Type = Types.Base;
+                this.parent.AddChild(this);
+                this.OnEvent.OnRemoveNoneHexs?.Invoke();
+            }
+            else
+            {
+                mapHexs.ReproductionPointers(this);
+            }
         }
         private void ProcessContextMenu()
         {
             GenericMenu genericMenu = new GenericMenu();
-            genericMenu.AddItem(new GUIContent("Удалить"), false, () => ThisData.OnEvent.OnRemove());
+            genericMenu.AddItem(new GUIContent("Удалить"), false, () => OnEvent.OnRemove());
             genericMenu.ShowAsContext();
         }
         public bool ProcessEvents(Event e)
         {
-            switch(e.type)
+            switch (e.type)
             {
                 case EventType.MouseDown:
                     if (e.button == 0)
                     {
-                        ThisData.OnEvent.OnChangeState?.Invoke(this);
+                        ChangeState();
                         GUI.changed = true;
                     }
-                    if(this.ThisData.Type == Types.Base)
+                    if (this.Type == Types.Base)
                     {
-                        if (e.button == 1 && this.ThisData.parent != null)
+                        if (e.button == 1 && this.parent != null)
                         {
                             this.ProcessContextMenu();
                             GUI.changed = true;
@@ -51,39 +91,15 @@ namespace LuckSmile.EditorMapHexs
             }
             return false;
         }
-        public class Data
-        {
-            public List<EarthHex> childs;
-            public EarthHex parent = null;
-            public Vector2 Index { get; private set; }
-            public Types Type { get; private set; }
-            public Rect RectPosition;
-            public OnEvents OnEvent { get; set; }
-            public GUIStyle Style { get; private set; }
-            public Data(Vector2 index, Types type)
-            {
-                childs = new List<EarthHex>();
-                this.Index = index;
-                this.RectPosition = new Rect();
-                this.Type = type;
-            }
-            public void Set(Types Type, GUIStyle Style)
-            {
-                this.Type = Type;
-                this.Style = Style;
-            }
-        }
         public struct OnEvents
         {
             public Action<EarthHex> OnEdit { get; private set; }
             public Action OnRemove { get; private set; }
             public Action OnRemoveNoneHexs { get; private set; }
-            public Action<EarthHex> OnChangeState { get; private set; }
-            public OnEvents(Action<EarthHex> OnEdit, Action OnRemove, Action<EarthHex> OnChangeState, Action OnRemoveNoneHexs)
+            public OnEvents(Action<EarthHex> OnEdit, Action OnRemove, Action OnRemoveNoneHexs)
             {
                 this.OnEdit = OnEdit;
                 this.OnRemove = OnRemove;
-                this.OnChangeState = OnChangeState;
                 this.OnRemoveNoneHexs = OnRemoveNoneHexs;
             }
         }

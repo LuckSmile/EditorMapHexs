@@ -45,11 +45,11 @@ public class MapHexsEditor : EditorWindow
         for(int index = 0; index < map.Hexs.Length; index++)
         {
             EarthHex hex = map.Hexs[index];
-            Vector2 start = hex.ThisData.RectPosition.center + new Vector2(0f, 5f);
-            for (int indexChild = 0; indexChild < hex.ThisData.childs.Count; indexChild++)
+            Vector2 start = hex.RectPosition.center + new Vector2(0f, 5f);
+            for (int indexChild = 0; indexChild < hex.Childs.Length; indexChild++)
             {
-                EarthHex child = hex.ThisData.childs[indexChild];
-                Vector2 end = child.ThisData.RectPosition.center + new Vector2(0f, 5f);
+                EarthHex child = hex.Childs[indexChild];
+                Vector2 end = child.RectPosition.center + new Vector2(0f, 5f);
                 Vector2 center = (start + end) / 2;
                 Handles.DrawBezier(start, end, center, center, this.parametersEarthHex.ColorArrow, null, 4f);
             }
@@ -65,13 +65,14 @@ public class MapHexsEditor : EditorWindow
     }
     private void ProccesEarthHexEvents(Event e)
     {
-        List<EarthHex> earthHices = new List<EarthHex>();
-        earthHices.AddRange(this.map.Hexs);
-        for(int index = 0; index < earthHices.Count; index++)
+        List<EarthHex> hices = new List<EarthHex>();
+        hices.AddRange(this.map.Hexs);
+        for(int index = 0; index < hices.Count; index++)
         {
-            if(earthHices[index].ThisData.RectPosition.Contains(e.mousePosition))
+            EarthHex hex = hices[index];
+            if(hex.RectPosition.Contains(e.mousePosition))
             {
-                bool guiChanged = earthHices[index].ProcessEvents(e);
+                bool guiChanged = hex.ProcessEvents(e);
                 if (guiChanged)
                 {
                     GUI.changed = true;

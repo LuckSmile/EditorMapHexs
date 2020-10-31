@@ -10,7 +10,7 @@ namespace LuckSmile.EditorMapHexs
     public class DataMapHexs
     {
         public EarthHex[] Hexs => hexs.Values.ToArray();
-        private readonly ParametersEarthHex parametersEarthHex = null;
+        public readonly ParametersEarthHex parametersEarthHex = null;
         private readonly Dictionary<Vector2, EarthHex> hexs = null;
         private readonly Vector2 sizeCell = Vector2.zero;
         private readonly TypesHex type = TypesHex.SharpTop;
@@ -23,8 +23,8 @@ namespace LuckSmile.EditorMapHexs
             this.hexs = new Dictionary<Vector2, EarthHex>();
 
             EarthHex hex = CreateHex(Vector2.zero, EarthHex.Types.Base);
-            hex.ThisData.RectPosition.position = (sizeWindow - sizeCell) / 2f;
-            hexs.Add(hex.ThisData.Index, hex);
+            hex.RectPosition.position = (sizeWindow - sizeCell) / 2f;
+            hexs.Add(hex.Data.Index, hex);
         }
         private EarthHex CreateHex(Vector2 index, EarthHex.Types type)
         {
@@ -32,9 +32,13 @@ namespace LuckSmile.EditorMapHexs
             style.normal.background = type == EarthHex.Types.Pointer ? parametersEarthHex.TextureHexPointer : parametersEarthHex.TextureHexBase;
             style.border = new RectOffset(4, 4, 4, 4);
 
-            EarthHex hex = new EarthHex(new EarthHex.Data(index, type), style);
-            hex.ThisData.RectPosition = new Rect(Vector2.zero, sizeCell);
-            hex.ThisData.OnEvent = new EarthHex.OnEvents(null, () => RemoveHex(index), ChangeState, ClearPointers);
+            DataEarthHex dataEarthHex = new DataEarthHex(new Vector2Int((int)index.x, (int)index.y));
+
+            EarthHex hex = new EarthHex(dataEarthHex, type, new EarthHex.OnEvents(null, () => RemoveHex(index), ClearPointers), this, style)
+            {
+                RectPosition = new Rect(Vector2.zero, sizeCell)
+            };// new EarthHex.Data(index, type), style);
+            
             return hex;
         }
         private EarthHex CreatePointer(Vector2 index, Vector2 direction, EarthHex parent)
@@ -44,42 +48,25 @@ namespace LuckSmile.EditorMapHexs
             
             EarthHex hex = CreateHex(index, EarthHex.Types.Pointer);
 
-            Vector2 position = parent == null ? Vector2.zero : parent.ThisData.RectPosition.position;
+            Vector2 position = parent == null ? Vector2.zero : parent.RectPosition.position;
             position += direction * sizeCell;
-            hex.ThisData.RectPosition = new Rect(position, sizeCell);
-            hex.ThisData.parent = parent;
+            hex.RectPosition = new Rect(position, sizeCell);
+            hex.parent = parent;
             return hex;
-        }
-        public void ChangeState(EarthHex hex)
-        {
-            if (hex.ThisData.Type == EarthHex.Types.Pointer)
-            {
-                GUIStyle style = new GUIStyle();
-                style.normal.background = parametersEarthHex.TextureHexBase;
-                style.border = new RectOffset(4, 4, 4, 4);
-
-                hex.ThisData.Set(EarthHex.Types.Base, style);
-                hex.ThisData.parent.ThisData.childs.Add(hex);
-                hex.ThisData.OnEvent.OnRemoveNoneHexs?.Invoke();
-            }
-            else
-            {
-                ReproductionPointers(hex);
-            }
         }
         public void RemoveHex(Vector2 index)
         {
             ClearPointers();
             void Remove(EarthHex hex)
             {
-                hexs.Remove(hex.ThisData.Index);
-                EarthHex[] childs = hex.ThisData.childs.ToArray();
+                hexs.Remove(hex.Data.Index);
+                EarthHex[] childs = hex.Childs;
                 for(int indexChild = 0; indexChild < childs.Length; indexChild++)
                 {
                     Remove(childs[indexChild]);
                 }
             }
-            hexs[index].ThisData.parent.ThisData.childs.Remove(hexs[index]);
+            hexs[index].parent.RemoveChild(hexs[index]);
             Remove(hexs[index]);
         }
         public void ClearPointers()
@@ -87,10 +74,10 @@ namespace LuckSmile.EditorMapHexs
             EarthHex[] hexs = this.hexs.Values.ToArray();
             for (int index = 0; index < hexs.Length; index++)
             {
-                EarthHex h = hexs[index];
-                if (h.ThisData.Type == EarthHex.Types.Pointer)
+                EarthHex hex = hexs[index];
+                if (hex.Type == EarthHex.Types.Pointer)
                 {
-                    this.hexs.Remove(h.ThisData.Index);
+                    this.hexs.Remove(hex.Data.Index);
                 }
             }
         }
@@ -120,10 +107,10 @@ namespace LuckSmile.EditorMapHexs
                     {
                         Vector2 index = new Vector2(direction[x], direction[y]);
                         index.y *= index.x == 0 ? 2 : 1;
-                        EarthHex pointer = this.CreatePointer(hex.ThisData.Index - index, directionPoint[new Vector2(direction[x], direction[y])], hex);
+                        EarthHex pointer = this.CreatePointer(hex.Data.Index - index, directionPoint[new Vector2(direction[x], direction[y])], hex);
                         if(pointer != null)
                         {
-                            hexs.Add(pointer.ThisData.Index, pointer);
+                            hexs.Add(pointer.Data.Index, pointer);
                         }
                     }
                 }
