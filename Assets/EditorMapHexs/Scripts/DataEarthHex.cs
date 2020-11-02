@@ -1,14 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class DataEarthHex
+[System.Serializable] public class DataEarthHex
 {
-    public Vector2Int Index { get; private set; }
-    public List<DataEarthHex> Childs { get; private set; }
+    public Vector2Int Index => index;
+    [SerializeField] private Vector2Int index = Vector2Int.zero;
+    public List<DataEarthHex> childs = null;
     public DataEarthHex(Vector2Int index)
     {
-        this.Index = index;
-        this.Childs = new List<DataEarthHex>();
+        this.index = index;
+        this.childs = new List<DataEarthHex>();
     }
 }
