@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using LuckSmile.EditorMapHexs;
+using LuckSmile.MapHexs;
 public class MapHexsEditor : EditorWindow
 {
-    //private SystemInteractionsCells interactionsCells;
+    public static EarthHex selectedHex;
     private ParametersEarthHex parametersEarthHex;
-    private DataMapHexs map;
+
+    private MapHexs map;
+
     private Vector2 pointPostition = Vector2.zero;
     private Vector2 drag = Vector2.zero;
     [MenuItem("Tools/Map")] public static void Init()
@@ -20,15 +23,26 @@ public class MapHexsEditor : EditorWindow
     private void OnEnable()
     {
         this.parametersEarthHex = EditorGUIUtility.Load("Assets/EditorMapHexs/Settings/ParametersEarthHex.asset") as ParametersEarthHex;
-        Debug.Log(this.parametersEarthHex);
         if(this.parametersEarthHex == null)
         {
             this.parametersEarthHex = ScriptableObject.CreateInstance<ParametersEarthHex>();
             AssetDatabase.CreateAsset(this.parametersEarthHex, "Assets/EditorMapHexs/Settings/ParametersEarthHex.asset");
             EditorUtility.SetDirty(parametersEarthHex);
-            AssetDatabase.SaveAssets();
         }
-        this.map = new DataMapHexs(DataMapHexs.TypesHex.SharpTop, parametersEarthHex, new Vector2(600, 600), new Vector2(80, 80));
+
+        DataMapHexs data = Resources.Load<DataMapHexs>("DataMapHexs");
+        if(data == null)
+        {
+            data = ScriptableObject.CreateInstance<DataMapHexs>();
+            data.hexs = new List<DataEarthHex>();
+            AssetDatabase.CreateAsset(data, "Assets/EditorMapHexs/Resources/DataMapHexs.asset");
+        }
+        
+        data.parametersEarthHex = parametersEarthHex;
+        EditorUtility.SetDirty(data);
+
+        AssetDatabase.SaveAssets();
+        this.map = new MapHexs(data, new Vector2(600, 600), new Vector2(80, 80));
     }
     private void OnGUI()
     {
@@ -91,7 +105,19 @@ public class MapHexsEditor : EditorWindow
                     OnDrag(e.delta);
                 }
                 break;
+            case EventType.MouseDown:
+                if (e.button == 1 && selectedHex == null)
+                {
+                    ProcessContextMenu();
+                }
+                break;
         }
+    }
+    private void ProcessContextMenu()
+    {
+        GenericMenu genericMenu = new GenericMenu();
+        genericMenu.AddItem(new GUIContent("Сохранить"), false, () => map.Saving());
+        genericMenu.ShowAsContext();
     }
     private void OnDrag(Vector2 delta)
     {
