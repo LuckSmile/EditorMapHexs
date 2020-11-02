@@ -4,23 +4,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEditor;
-using System.Security.Policy;
+using LuckSmile.MapHexs;
 
 namespace LuckSmile.EditorMapHexs
 {
     public class EarthHex
     {
-        private readonly DataMapHexs mapHexs;
+        private readonly MapHexs mapHexs;
         private readonly List<EarthHex> childs = null;
         public DataEarthHex Data { get; private set; }
         public EarthHex[] Childs { get => childs.ToArray(); }
         public EarthHex parent;
         public Types Type { get; private set; }
         public OnEvents OnEvent { get; private set; }
-        private GUIStyle style;
+        private readonly GUIStyle style;
         public Rect RectPosition;
 
-        public EarthHex(DataEarthHex data, Types type, OnEvents onEvent, DataMapHexs mapHexs, GUIStyle style)
+        public EarthHex(DataEarthHex data, Types type, OnEvents onEvent, MapHexs mapHexs, GUIStyle style)
         {
             this.mapHexs = mapHexs;
             this.Data = data;
@@ -31,12 +31,12 @@ namespace LuckSmile.EditorMapHexs
         }
         public void AddChild(EarthHex hex)
         {
-            Data.Childs.Add(hex.Data);
+            Data.childs.Add(hex.Data);
             childs.Add(hex);
         }
         public void RemoveChild(EarthHex hex)
         {
-            Data.Childs.Remove(hex.Data);
+            Data.childs.Remove(hex.Data);
             childs.Remove(hex);
         }
         public void Draw()
@@ -51,17 +51,15 @@ namespace LuckSmile.EditorMapHexs
         {
             if (this.Type == EarthHex.Types.Pointer)
             {
-                this.style.normal.background = mapHexs.parametersEarthHex.TextureHexBase;
+
+                this.style.normal.background = mapHexs.Data.parametersEarthHex.TextureHexBase;
                 this.style.border = new RectOffset(4, 4, 4, 4);
 
                 this.Type = Types.Base;
                 this.parent.AddChild(this);
                 this.OnEvent.OnRemoveNoneHexs?.Invoke();
             }
-            else
-            {
-                mapHexs.ReproductionPointers(this);
-            }
+            mapHexs.ReproductionPointers(this);
         }
         private void ProcessContextMenu()
         {
@@ -77,6 +75,15 @@ namespace LuckSmile.EditorMapHexs
                     if (e.button == 0)
                     {
                         ChangeState();
+                        if (MapHexsEditor.selectedHex != this)
+                        {
+                            MapHexsEditor.selectedHex = this;
+                        }
+                        else
+                        {
+                            mapHexs.ClearPointers();
+                            MapHexsEditor.selectedHex = null;
+                        }
                         GUI.changed = true;
                     }
                     if (this.Type == Types.Base)
