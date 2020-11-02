@@ -7,12 +7,12 @@ using UnityEditor;
 public class UIHexCell : MonoBehaviour, IPointerDownHandler
 {
     public TypesStatus TypeStatus { get; private set; } = TypesStatus.Close;
-    private DataEarthHex data = null;
-    private List<UIHexCell> chillds = null;
+    public DataEarthHex Data { get; private set; }
+    public List<UIHexCell> Chillds { get; private set; }
     public static UIHexCell Instantiate(UIHexCell prefab, Transform parent, DataEarthHex data)
     {
         UIHexCell cell = Instantiate(prefab, parent);
-        cell.data = data;
+        cell.Data = data;
         return cell;
     }
     public void OnPointerDown(PointerEventData eventData)
@@ -20,9 +20,9 @@ public class UIHexCell : MonoBehaviour, IPointerDownHandler
         switch(this.TypeStatus)
         {
             case TypesStatus.CanBeOpened:
-                for(int index = 0; index < chillds.Count; index++)
+                for(int index = 0; index < Chillds.Count; index++)
                 {
-                    UIHexCell uICell = chillds[index];
+                    UIHexCell uICell = Chillds[index];
                     uICell.TypeStatus = TypesStatus.CanBeOpened;
                 }
                 break;
