@@ -22,82 +22,84 @@ MonoBehaviour:
         childs:
         - index: {x: 0, y: 4}
           childs:
-          - index: {x: -1, y: 3}
+          - index: {x: -1, y: 5}
             childs:
-            - index: {x: -1, y: 1}
+            - index: {x: -2, y: 4}
               childs:
-              - index: {x: -1, y: -1}
-                childs:
-                - index: {x: 0, y: -2}
-  - index: {x: -1, y: 1}
-    childs:
-    - index: {x: -1, y: -1}
-      childs:
-      - index: {x: 0, y: -2}
-        childs:
-        - index: {x: 1, y: -1}
-          childs: []
-  - index: {x: 1, y: 3}
-    childs:
-    - index: {x: 0, y: 4}
-      childs:
-      - index: {x: -1, y: 3}
-        childs:
-        - index: {x: -1, y: 1}
-          childs:
-          - index: {x: -1, y: -1}
-            childs:
-            - index: {x: 0, y: -2}
-              childs:
-              - index: {x: 1, y: -1}
+              - index: {x: -2, y: 2}
                 childs: []
-  - index: {x: -1, y: -1}
-    childs:
-    - index: {x: 0, y: -2}
-      childs:
-      - index: {x: 1, y: -1}
-        childs: []
-  - index: {x: 0, y: 4}
-    childs:
-    - index: {x: -1, y: 3}
-      childs:
-      - index: {x: -1, y: 1}
+      - index: {x: 2, y: 2}
         childs:
-        - index: {x: -1, y: -1}
+        - index: {x: 2, y: 4}
+          childs: []
+        - index: {x: 2, y: 0}
           childs:
-          - index: {x: 0, y: -2}
-            childs:
-            - index: {x: 1, y: -1}
-              childs: []
+          - index: {x: 3, y: 1}
+            childs: []
   - index: {x: 1, y: 1}
     childs:
     - index: {x: 1, y: 3}
       childs:
       - index: {x: 0, y: 4}
         childs:
-        - index: {x: -1, y: 3}
+        - index: {x: -1, y: 5}
           childs:
-          - index: {x: -1, y: 1}
+          - index: {x: -2, y: 4}
             childs:
-            - index: {x: -1, y: -1}
-              childs:
-              - index: {x: 0, y: -2}
-                childs:
-                - index: {x: 1, y: -1}
-  - index: {x: -1, y: 3}
-    childs:
-    - index: {x: -1, y: 1}
+            - index: {x: -2, y: 2}
+              childs: []
+    - index: {x: 2, y: 2}
       childs:
-      - index: {x: -1, y: -1}
+      - index: {x: 2, y: 4}
+        childs: []
+      - index: {x: 2, y: 0}
         childs:
-        - index: {x: 0, y: -2}
-          childs:
-          - index: {x: 1, y: -1}
-            childs: []
-  - index: {x: 0, y: -2}
+        - index: {x: 3, y: 1}
+          childs: []
+  - index: {x: 1, y: 3}
     childs:
-    - index: {x: 1, y: -1}
+    - index: {x: 0, y: 4}
+      childs:
+      - index: {x: -1, y: 5}
+        childs:
+        - index: {x: -2, y: 4}
+          childs:
+          - index: {x: -2, y: 2}
+            childs: []
+  - index: {x: 0, y: 4}
+    childs:
+    - index: {x: -1, y: 5}
+      childs:
+      - index: {x: -2, y: 4}
+        childs:
+        - index: {x: -2, y: 2}
+          childs: []
+  - index: {x: -1, y: 5}
+    childs:
+    - index: {x: -2, y: 4}
+      childs:
+      - index: {x: -2, y: 2}
+        childs: []
+  - index: {x: -2, y: 4}
+    childs:
+    - index: {x: -2, y: 2}
       childs: []
-  - index: {x: 1, y: -1}
+  - index: {x: -2, y: 2}
+    childs: []
+  - index: {x: 2, y: 2}
+    childs:
+    - index: {x: 2, y: 4}
+      childs: []
+    - index: {x: 2, y: 0}
+      childs:
+      - index: {x: 3, y: 1}
+        childs: []
+  - index: {x: 2, y: 4}
+    childs: []
+  - index: {x: 2, y: 0}
+    childs:
+    - index: {x: 3, y: 1}
+      childs: []
+  - index: {x: 3, y: 1}
     childs: []
   parametersEarthHex: {fileID: 11400000, guid: 57e19bbb08914c8488975221af0c1c7a, type: 2}

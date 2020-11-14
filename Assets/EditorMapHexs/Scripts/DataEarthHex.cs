@@ -5,7 +5,7 @@ using UnityEngine;
 {
     public Vector2Int Index => index;
     [SerializeField] private Vector2Int index = Vector2Int.zero;
-    public List<DataEarthHex> childs = null;
+    [HideInInspector] public List<DataEarthHex> childs = null;
     public DataEarthHex(Vector2Int index)
     {
         this.index = index;

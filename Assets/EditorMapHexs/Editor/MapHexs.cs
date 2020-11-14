@@ -51,7 +51,6 @@ namespace LuckSmile.EditorMapHexs
 
             Vector2 position = parent == null ? Vector2.zero : parent.RectPosition.position;
             position += direction * sizeCell;
-            Debug.Log(direction);
             hex.RectPosition = new Rect(position, sizeCell);
             hex.parent = parent;
             return hex;
@@ -81,7 +80,7 @@ namespace LuckSmile.EditorMapHexs
                     
                     Vector2 key = hex.Data.Index - hexChild.Data.Index;
                     key.y /= Mathf.Abs(key.y) == 2 ? 2 : 1;
-                    Debug.Log(key);
+
                     Vector2 direction = directionPoint[key];
                     position += direction * sizeCell;
                     hexChild.RectPosition = new Rect(position, sizeCell);
@@ -107,13 +106,11 @@ namespace LuckSmile.EditorMapHexs
         {
             Data.hexs.Clear();
             EarthHex[] hexs = this.hexs.Values.ToArray();
-            Debug.Log(hexs.Length);
             for (int index = 0; index < hexs.Length; index++)
             {
                 EarthHex hex = hexs[index];
                 Data.hexs.Add(hex.Data);
             }
-            Debug.Log(Data.hexs.Count);
             EditorUtility.SetDirty(Data);
             AssetDatabase.SaveAssets();
 
